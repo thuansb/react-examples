@@ -3,71 +3,80 @@
   <head>
     <meta charset="utf-8">
     <title>React Tutorial</title>
+    <!-- Not present in the tutorial. Just for basic styling. -->
+    <link rel="stylesheet" href="css/base.css" /> 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.2/marked.min.js"></script>
+  </head>
+  <body>
+    <div id="content"></div>
+    
+    <script type="text/babel">  
+  var ToDoItem = React.createClass({
+      render: function(){
+        return (
+          <li>{this.props.text}</li>
+        );
+      } 
+  });
 
-	<script type="script/babel">
-		var ToDoItem = React.createClass({
-			render: function(){
-				return (
-					<li>{this.props.text}</li>
-				);
-			}	
-		});
+  var ToDoForm = React.createClass({    
+      handleSubmit: function(e){
+        e.preventDefault();
 
-		var AddToDo = React.createClass({
-			onPressSubmit: function(){
-				data.push(this.props.value);
+        var todoText = this.refs.todo.value.trim();      
 
-			},
-			render: function(){
-				return (
-					<div>
-						<form>
-							<input name="todo" placeholder="Enter something"/>
-							<input type="submit" value="Add" onSubmit="this.onPressSubmit()"/>
-						</form>
-					</div>
-				); 	
-			}
-			
-		});
+        if(!todoText){
+          return;
+        }
+        this.props.onPressSubmit({text: todoText})
+        this.refs.todo.value = "";        
+      },
+      render: function(){
+        return (
+            <form onSubmit={this.handleSubmit}>
+              <input name="todo" placeholder="Enter something" ref="todo"/>
+              <input type="submit" name="Add"/>
+            </form>
+        );  
+      }
+      
+    });
 
-		var ToDoApp = React.createClass({
+  var ToDoApp = React.createClass({
 
-			getInitialState: function(){
-				return {items:[], text:''}
-			},
+      getInitialState: function(){
+        return {items:[{text: 'listen music'}, {text: 'reading book'}]};
+      },
 
-			handleSubmit: function(){
-				this.setState.items = data;
-			},
+      onPressSubmit: function(obj){
+        var newData = this.state.items;
+        newData.push({text: obj.text});
+        this.setState({items: newData});
+      },
 
-			render: function(){
-				var listItem = this.data.maps(function(obj){
-					return (
-						<ToDoItem text={obj.name}/>
-						);
-				});
-				return (
-					<div>
-						<h1>Todo App</h1>
-						{listItem}
-						<AddToDo onSubmit={this.onSubmit()}/>
-					</div>
-				);
-			}
+      render: function(){
+        var listItem = this.state.items.map(function(obj){
+          return (
+            <ToDoItem text={obj.text}/>
+            );
+        });
+        return (
+          <div>
+            <h1>Todo App</h1>
+            {listItem}
+            <ToDoForm onPressSubmit={this.onPressSubmit}/>
+          </div>
+        );
+      }
+    });
 
-			ReactDOM.render(<ToDoApp/>, getElementById('content'));
-		});
-
-	</script>
-</head>
-
-<body>
-	<div id="content"></div>
-</body>
+    ReactDOM.render(
+      <ToDoApp/>, 
+      document.getElementById('content'));
+    </script>
+  </body>
 </html>
